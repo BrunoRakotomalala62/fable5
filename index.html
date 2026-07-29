@@ -7,7 +7,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#0a0a0f">
-    <title>Claude Fable 5 — Chat IA</title>
+    <title>Fable5 — Chat IA Multi-Modèles</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧠</text></svg>">
     <script src="https://js.puter.com/v2/"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
@@ -265,7 +265,7 @@
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
-        .welcome p { color: var(--text-muted); font-size: 15px; max-width: 480px; line-height: 1.6; }
+        .welcome p { color: var(--text-muted); font-size: 15px; max-width: 540px; line-height: 1.6; }
         .suggestions {
             display: flex;
             flex-wrap: wrap;
@@ -485,6 +485,8 @@
             align-items: center;
             margin-top: 8px;
             padding: 0 8px;
+            flex-wrap: wrap;
+            gap: 8px;
         }
         .input-footer span {
             font-size: 11px;
@@ -496,12 +498,33 @@
             border-radius: 16px;
             color: var(--text-secondary);
             font-size: 12px;
-            padding: 6px 12px;
+            padding: 6px 28px 6px 12px;
             cursor: pointer;
             font-family: inherit;
             transition: all var(--transition);
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%239898a8'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 8px center;
+            max-width: 220px;
+            text-overflow: ellipsis;
         }
         .model-select:hover { border-color: var(--accent); }
+        .model-select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 12px var(--accent-glow); }
+        .model-select optgroup {
+            background: var(--bg-secondary);
+            color: var(--text-muted);
+            font-style: normal;
+            font-weight: 600;
+            font-size: 11px;
+        }
+        .model-select option {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            padding: 6px;
+        }
 
         /* === MOBILE === */
         .menu-toggle {
@@ -545,6 +568,7 @@
             .send-btn { width: 36px; height: 36px; font-size: 16px; }
             .katex { font-size: 0.95em; }
             .katex-display > .katex { font-size: 1.05em; }
+            .model-select { max-width: 160px; font-size: 11px; }
         }
 
         /* === SCROLLBAR === */
@@ -589,7 +613,7 @@
 <aside class="sidebar" id="sidebar">
     <div class="sidebar-header">
         <div class="sidebar-logo">🧠</div>
-        <span class="sidebar-title">Claude Fable 5</span>
+        <span class="sidebar-title">Fable5</span>
     </div>
     <button class="new-chat-btn" onclick="newChat()">
         <span>✨</span> Nouvelle conversation
@@ -601,7 +625,7 @@
         </div>
     </div>
     <div class="sidebar-footer">
-        <span class="model-badge">🧬 Claude Fable 5</span>
+        <span class="model-badge" id="sidebarModelBadge">🧬 Claude Fable 5</span>
         <span>Propulsé par Puter.js</span>
     </div>
 </aside>
@@ -625,8 +649,8 @@
     <div class="chat-container" id="chatContainer">
         <div class="welcome" id="welcomeScreen">
             <div class="welcome-icon">🧠</div>
-            <h1>Claude Fable 5</h1>
-            <p>Le modèle le plus puissant d'Anthropic, accessible gratuitement. Raisonnement profond, code, analyse — posez votre question.</p>
+            <h1>Fable5</h1>
+            <p>Chat IA multi-modèles gratuit : Claude, GPT, Gemini, Grok, DeepSeek, Llama et plus. Choisissez votre modèle ci-dessous et commencez à discuter — propulsé par <strong>Puter.js</strong>.</p>
             <div class="suggestions">
                 <button class="suggestion-chip" onclick="sendSuggestion(this)">📝 Écris un essai sur l'IA éthique</button>
                 <button class="suggestion-chip" onclick="sendSuggestion(this)">💻 Explique-moi les monades en programmation</button>
@@ -640,7 +664,7 @@
         <div class="input-wrapper">
             <textarea 
                 id="userInput" 
-                placeholder="Posez votre question à Claude Fable 5..." 
+                placeholder="Posez votre question..." 
                 rows="1"
                 onkeydown="handleKeyDown(event)"
                 oninput="autoResize()"
@@ -650,15 +674,71 @@
             </button>
         </div>
         <div class="input-footer">
-            <span>Claude Fable 5 · Streaming activé</span>
+            <select class="model-select" id="modelSelect" onchange="onModelChange()">
+                <optgroup label="🧬 Anthropic (Claude)">
+                    <option value="claude-fable-5">🧬 Claude Fable 5</option>
+                    <option value="anthropic/claude-opus-4-8">🧠 Claude Opus 4.8</option>
+                    <option value="anthropic/claude-sonnet-5">💡 Claude Sonnet 5</option>
+                </optgroup>
+                <optgroup label="🤖 OpenAI">
+                    <option value="openai/gpt-5.5">⚡ GPT-5.5</option>
+                    <option value="openai/gpt-4o-mini">🚀 GPT-4o Mini</option>
+                    <option value="openai/o4-mini">🔮 o4-mini</option>
+                    <option value="openai/o3-mini">🎯 o3-mini</option>
+                </optgroup>
+                <optgroup label="🌐 Google">
+                    <option value="google/gemini-3.5-flash">💎 Gemini 3.5 Flash</option>
+                    <option value="google/gemini-2.5-pro">🔬 Gemini 2.5 Pro</option>
+                </optgroup>
+                <optgroup label="⚡ xAI">
+                    <option value="x-ai/grok-4.5">🐦 Grok 4.5</option>
+                    <option value="x-ai/grok-4.1-fast">⚡ Grok 4.1 Fast</option>
+                </optgroup>
+                <optgroup label="🔬 Open-Source">
+                    <option value="microsoft/phi-4">📐 Phi-4 (Microsoft)</option>
+                    <option value="deepseek/deepseek-r1">🐋 DeepSeek R1</option>
+                    <option value="meta-llama/llama-4-maverick">🦙 Llama 4 Maverick</option>
+                    <option value="mistralai/mistral-large-2">💨 Mistral Large 2</option>
+                    <option value="z-ai/glm-5.2">🏯 GLM 5.2</option>
+                </optgroup>
+            </select>
             <span id="charCount">0 / 4000</span>
         </div>
     </div>
 </main>
 
 <script>
-// === STATE ===
-const STATE_KEY = 'claude-fable-chat-state';
+// ============================================================
+// MODEL DEFINITIONS
+// ============================================================
+const MODEL_INFO = {
+    'claude-fable-5':              { name: 'Claude Fable 5',      provider: 'Anthropic',  emoji: '🧬' },
+    'anthropic/claude-opus-4-8':   { name: 'Claude Opus 4.8',     provider: 'Anthropic',  emoji: '🧠' },
+    'anthropic/claude-sonnet-5':   { name: 'Claude Sonnet 5',     provider: 'Anthropic',  emoji: '💡' },
+    'openai/gpt-5.5':              { name: 'GPT-5.5',             provider: 'OpenAI',     emoji: '⚡' },
+    'openai/gpt-4o-mini':          { name: 'GPT-4o Mini',         provider: 'OpenAI',     emoji: '🚀' },
+    'openai/o4-mini':              { name: 'o4-mini',             provider: 'OpenAI',     emoji: '🔮' },
+    'openai/o3-mini':              { name: 'o3-mini',             provider: 'OpenAI',     emoji: '🎯' },
+    'google/gemini-3.5-flash':     { name: 'Gemini 3.5 Flash',    provider: 'Google',     emoji: '💎' },
+    'google/gemini-2.5-pro':       { name: 'Gemini 2.5 Pro',      provider: 'Google',     emoji: '🔬' },
+    'x-ai/grok-4.5':               { name: 'Grok 4.5',            provider: 'xAI',        emoji: '🐦' },
+    'x-ai/grok-4.1-fast':          { name: 'Grok 4.1 Fast',       provider: 'xAI',        emoji: '⚡' },
+    'microsoft/phi-4':             { name: 'Phi-4',               provider: 'Microsoft',  emoji: '📐' },
+    'deepseek/deepseek-r1':        { name: 'DeepSeek R1',         provider: 'DeepSeek',   emoji: '🐋' },
+    'meta-llama/llama-4-maverick': { name: 'Llama 4 Maverick',    provider: 'Meta',       emoji: '🦙' },
+    'mistralai/mistral-large-2':   { name: 'Mistral Large 2',     provider: 'Mistral AI', emoji: '💨' },
+    'z-ai/glm-5.2':                { name: 'GLM 5.2',             provider: 'Z.AI',       emoji: '🏯' }
+};
+
+function getModelInfo(modelId) {
+    return MODEL_INFO[modelId] || { name: modelId, provider: 'Unknown', emoji: '🤖' };
+}
+
+// ============================================================
+// STATE
+// ============================================================
+const STATE_KEY = 'fable5-chat-state';
+const DEFAULT_MODEL = 'claude-fable-5';
 let state = loadState();
 let currentStreaming = null;
 
@@ -666,7 +746,8 @@ function defaultState() {
     return {
         conversations: {},
         activeConvId: null,
-        convOrder: []
+        convOrder: [],
+        selectedModel: DEFAULT_MODEL
     };
 }
 
@@ -675,8 +756,12 @@ function loadState() {
         const saved = localStorage.getItem(STATE_KEY);
         if (saved) {
             const parsed = JSON.parse(saved);
-            // Merge with defaults for forward compat
-            return { ...defaultState(), ...parsed };
+            const merged = { ...defaultState(), ...parsed };
+            // Validate model still exists
+            if (!MODEL_INFO[merged.selectedModel]) {
+                merged.selectedModel = DEFAULT_MODEL;
+            }
+            return merged;
         }
     } catch(e) {}
     return defaultState();
@@ -706,7 +791,39 @@ function createConv() {
     return conv;
 }
 
-// === UI ===
+// ============================================================
+// MODEL CHANGE HANDLER
+// ============================================================
+function onModelChange() {
+    const select = document.getElementById('modelSelect');
+    state.selectedModel = select.value;
+    saveState();
+    updateModelUI();
+    document.getElementById('userInput').focus();
+}
+
+function updateModelUI() {
+    const info = getModelInfo(state.selectedModel);
+    // Update sidebar badge
+    const badge = document.getElementById('sidebarModelBadge');
+    if (badge) {
+        badge.textContent = info.emoji + ' ' + info.name;
+    }
+    // Update input placeholder
+    const textarea = document.getElementById('userInput');
+    if (textarea) {
+        textarea.placeholder = 'Posez votre question à ' + info.name + '...';
+    }
+    // Update the select value if it's out of sync
+    const select = document.getElementById('modelSelect');
+    if (select && select.value !== state.selectedModel) {
+        select.value = state.selectedModel;
+    }
+}
+
+// ============================================================
+// UI
+// ============================================================
 function renderSidebar() {
     const list = document.getElementById('conversationList');
     if (state.convOrder.length === 0) {
@@ -732,6 +849,7 @@ function renderMessages() {
     const container = document.getElementById('chatContainer');
     const welcome = document.getElementById('welcomeScreen');
     const conv = getActiveConv();
+    const info = getModelInfo(state.selectedModel);
 
     if (!conv || conv.messages.length === 0) {
         container.innerHTML = '';
@@ -746,9 +864,9 @@ function renderMessages() {
 
     let html = '';
     conv.messages.forEach((msg, idx) => {
-        const roleLabel = msg.role === 'user' ? 'VOUS' : 'CLAUDE FABLE 5';
+        const roleLabel = msg.role === 'user' ? 'VOUS' : info.name.toUpperCase();
         const avatarClass = msg.role === 'user' ? 'user-avatar' : 'ai-avatar';
-        const avatarEmoji = msg.role === 'user' ? '👤' : '🧠';
+        const avatarEmoji = msg.role === 'user' ? '👤' : info.emoji;
         const renderedContent = msg.role === 'ai' ? renderMarkdown(msg.content) : escapeHtml(msg.content);
 
         html += `
@@ -775,40 +893,34 @@ function renderMessages() {
 function renderMarkdown(text) {
     if (!text) return '';
 
-    // --- Protect LaTeX math expressions before Markdown parsing ---
     const mathBlocks = [];
-    const PH = '\u29FC'; // ⧼ — unique placeholder marker
-    const PE = '\u29FD'; // ⧽
+    const PH = '\u29FC';
+    const PE = '\u29FD';
 
-    // 1. Protect \[ ... \] display math (LaTeX style)
     text = text.replace(/\\\[([\s\S]*?)\\\]/g, (match, formula) => {
         const idx = mathBlocks.length;
         mathBlocks.push({ type: 'display', formula: formula.trim() });
         return PH + idx + PE;
     });
 
-    // 2. Protect \( ... \) inline math (LaTeX style)
     text = text.replace(/\\\(([^\n]+?)\\\)/g, (match, formula) => {
         const idx = mathBlocks.length;
         mathBlocks.push({ type: 'inline', formula: formula.trim() });
         return PH + idx + PE;
     });
 
-    // 3. Protect $$ ... $$ display math
     text = text.replace(/\$\$([\s\S]*?)\$\$/g, (match, formula) => {
         const idx = mathBlocks.length;
         mathBlocks.push({ type: 'display', formula: formula.trim() });
         return PH + idx + PE;
     });
 
-    // 4. Protect $ ... $ inline math ($$ already removed, browser-safe regex)
     text = text.replace(/\$([^\$\n]+?)\$/g, (match, formula) => {
         const idx = mathBlocks.length;
         mathBlocks.push({ type: 'inline', formula: formula.trim() });
         return PH + idx + PE;
     });
 
-    // --- Standard Markdown rendering ---
     let html;
     if (typeof marked !== 'undefined') {
         marked.setOptions({ breaks: true, gfm: true });
@@ -817,7 +929,6 @@ function renderMarkdown(text) {
         html = escapeHtml(text).replace(/\n/g, '<br>');
     }
 
-    // --- Restore & render math with KaTeX ---
     for (let i = mathBlocks.length - 1; i >= 0; i--) {
         const placeholder = PH + i + PE;
         try {
@@ -866,14 +977,15 @@ function addTypingIndicator() {
     const container = document.getElementById('chatContainer');
     const welcome = document.getElementById('welcomeScreen');
     if (welcome) welcome.style.display = 'none';
+    const info = getModelInfo(state.selectedModel);
 
     const indicator = document.createElement('div');
     indicator.className = 'message ai';
     indicator.id = 'typingIndicator';
     indicator.innerHTML = `
-        <div class="msg-avatar ai-avatar">🧠</div>
+        <div class="msg-avatar ai-avatar">${info.emoji}</div>
         <div class="msg-content">
-            <div class="msg-role">CLAUDE FABLE 5</div>
+            <div class="msg-role">${info.name.toUpperCase()}</div>
             <div class="typing-dots">
                 <span></span><span></span><span></span>
             </div>
@@ -888,9 +1000,11 @@ function removeTypingIndicator() {
     if (indicator) indicator.remove();
 }
 
-// === ACTIONS ===
+// ============================================================
+// ACTIONS
+// ============================================================
 function newChat() {
-    const conv = createConv();
+    createConv();
     renderSidebar();
     renderMessages();
     document.getElementById('userInput').value = '';
@@ -932,7 +1046,6 @@ async function sendMessage() {
     const content = input.value.trim();
     if (!content || content.length > 4000) return;
 
-    // Get or create conversation
     let conv = getActiveConv();
     if (!conv) conv = createConv();
 
@@ -958,9 +1071,9 @@ async function sendMessage() {
     renderMessages();
     addTypingIndicator();
 
-    // Build prompt from conversation history
+    // Build conversation history prompt
     const messages = conv.messages
-        .filter(m => m.role !== 'ai' || m.content !== '') // skip empty ai placeholder
+        .filter(m => m.role !== 'ai' || m.content !== '')
         .map(m => `${m.role === 'user' ? 'User' : 'Assistant'}: ${m.content}`)
         .join('\n\n');
 
@@ -968,7 +1081,7 @@ async function sendMessage() {
 
     try {
         const response = await puter.ai.chat(fullPrompt, {
-            model: 'claude-fable-5',
+            model: state.selectedModel,
             stream: true
         });
 
@@ -980,13 +1093,11 @@ async function sendMessage() {
                 fullContent += part.text;
                 conv.messages[aiMsgIdx].content = fullContent;
                 saveState();
-                // Update only the AI message content efficiently
                 updateAiMessage(aiMsgIdx, fullContent);
                 scrollToBottom();
             }
         }
 
-        // If empty response
         if (!fullContent) {
             conv.messages[aiMsgIdx].content = '_(Aucune réponse reçue)_';
         }
@@ -1004,7 +1115,6 @@ async function sendMessage() {
 function updateAiMessage(idx, content) {
     const container = document.getElementById('chatContainer');
     const messages = container.querySelectorAll('.message.ai');
-    // Find the right AI message (they appear in order)
     const conv = getActiveConv();
     if (!conv) return;
     const aiMessages = conv.messages.filter(m => m.role === 'ai');
@@ -1020,7 +1130,7 @@ function updateAiMessage(idx, content) {
 }
 
 function sendSuggestion(btn) {
-    const text = btn.textContent.replace(/^[^\s]+\s/, ''); // remove emoji
+    const text = btn.textContent.replace(/^[^\s]+\s/, '');
     document.getElementById('userInput').value = text;
     autoResize();
     document.getElementById('sendBtn').disabled = false;
@@ -1041,10 +1151,8 @@ function copyMessage(idx) {
     const conv = getActiveConv();
     if (!conv || !conv.messages[idx]) return;
     navigator.clipboard.writeText(conv.messages[idx].content).then(() => {
-        // Brief feedback
         const container = document.getElementById('chatContainer');
         const buttons = container.querySelectorAll('.msg-action-btn');
-        // Find the right button
         let btnIdx = 0;
         for (let i = 0; i < conv.messages.length && i <= idx; i++) {
             if (conv.messages[i].role === 'ai') {
@@ -1069,11 +1177,12 @@ function exportChat() {
         alert('Aucune conversation à exporter.');
         return;
     }
+    const info = getModelInfo(state.selectedModel);
     let text = `# ${conv.title}\n\n`;
     text += `Date: ${new Date(conv.createdAt).toLocaleString()}\n`;
-    text += `Modèle: Claude Fable 5\n\n---\n\n`;
+    text += `Modèle: ${info.name} (${info.provider})\n\n---\n\n`;
     conv.messages.forEach(msg => {
-        text += `## ${msg.role === 'user' ? '👤 Vous' : '🧠 Claude Fable 5'}\n\n`;
+        text += `## ${msg.role === 'user' ? '👤 Vous' : info.emoji + ' ' + info.name}\n\n`;
         text += msg.content + '\n\n';
     });
 
@@ -1081,7 +1190,7 @@ function exportChat() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `claude-fable-5-${conv.id}.md`;
+    a.download = `fable5-chat-${conv.id}.md`;
     a.click();
     URL.revokeObjectURL(url);
 }
@@ -1102,8 +1211,16 @@ function closeSidebar() {
 
 document.getElementById('sidebarOverlay').addEventListener('click', closeSidebar);
 
-// === INIT ===
+// ============================================================
+// INIT
+// ============================================================
 function init() {
+    // Restore selected model in dropdown
+    const select = document.getElementById('modelSelect');
+    if (state.selectedModel && MODEL_INFO[state.selectedModel]) {
+        select.value = state.selectedModel;
+    }
+    updateModelUI();
     renderSidebar();
     if (state.activeConvId && state.conversations[state.activeConvId]) {
         renderMessages();
