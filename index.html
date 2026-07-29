@@ -167,6 +167,27 @@
             color: var(--accent);
             border: 1px solid rgba(212,165,116,0.2);
         }
+        .signout-btn {
+            padding: 8px 16px;
+            margin-top: 4px;
+            background: transparent;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text-muted);
+            font-size: 12px;
+            cursor: pointer;
+            transition: all var(--transition);
+            font-family: inherit;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        .signout-btn:hover {
+            color: var(--danger);
+            border-color: var(--danger);
+            background: rgba(248,113,113,0.08);
+        }
 
         /* === MAIN === */
         .main {
@@ -626,6 +647,9 @@
     </div>
     <div class="sidebar-footer">
         <span class="model-badge" id="sidebarModelBadge">🧬 Claude Fable 5</span>
+        <button class="signout-btn" onclick="signOutPuter()" title="Changer de compte Puter">
+            🔄 Changer de compte
+        </button>
         <span>Propulsé par Puter.js</span>
     </div>
 </aside>
@@ -1210,6 +1234,22 @@ function closeSidebar() {
 }
 
 document.getElementById('sidebarOverlay').addEventListener('click', closeSidebar);
+
+// ============================================================
+// SIGN OUT
+// ============================================================
+function signOutPuter() {
+    if (!confirm('Déconnexion : cela effacera vos conversations et vous permettra de vous connecter avec un autre compte Puter. Continuer ?')) return;
+    try {
+        puter.auth.signOut();
+    } catch(e) {
+        console.log('Puter signOut:', e);
+    }
+    // Clear all app data
+    localStorage.clear();
+    // Reload the page — Puter will ask for new login
+    location.reload();
+}
 
 // ============================================================
 // INIT
