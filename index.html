@@ -335,11 +335,11 @@ const MODEL_INFO = {
     'deepseek/deepseek-r1': { name: 'DeepSeek R1', provider: 'DeepSeek', emoji: '🐋', vision: false },
     'meta-llama/llama-4-maverick': { name: 'Llama 4 Maverick', provider: 'Meta', emoji: '🦙', vision: false },
     'mistralai/mistral-large-2': { name: 'Mistral Large 2', provider: 'Mistral AI', emoji: '💨', vision: false },
-    'z-ai/glm-5.2': { name: 'GLM 5.2', provider: 'Z.AI', emoji: '🏯', vision: false }
+    'z-ai/glm-5.2': { name: 'GLM 5.2',  provider: 'Z.AI',     emoji: '🏯', vision: false }
 };
 
 function getModelInfo(modelId) {
-    return MODEL_INFO[modelId] || { name: modelId, provider: 'Unknown', emoji: '🤖', vision: false };
+    return MODEL_INFO[modelId] || { name: modelId, provider: 'Unknown', emoji: '🤖, vision: false };
 }
 
 const STATE_KEY = 'fable5-chat-state';
@@ -604,7 +604,7 @@ async function sendMessage() {
         let response;
         if (imgAtt.length > 0) {
             const imageUrl = imgAtt[0].dataUrl;
-            const msgs = [{ role: 'user', content: [{ type: 'text', text: fullPrompt }, { type: 'image_url', image_url: { url: imageUrl } }] }];
+            var msgs = [{ role: 'user', content: [{ type: 'text', text: fullPrompt }, { type: 'image_url', image_url: { url: imageUrl } }] }];
             response = await puter.ai.chat(msgs, { model: state.selectedModel, stream: true });
         } else if (msgAttachments.length > 0) {
             const f = msgAttachments[0];
@@ -622,7 +622,7 @@ async function sendMessage() {
         if (!fullContent) conv.messages[aiMsgIdx].content = '_(Aucune réponse reçue)_';
     } catch (err) {
         removeTypingIndicator(); console.error('Erreur:', err);
-        conv.messages[aiMsgIdx].content = `❌ **Erreur**: ' + escapeHtml(err.message || 'Inconnue') + '.';
+        conv.messages[aiMsgIdx].content = '� **Erreur**: ' + escapeHtml(err.message || 'Inconnue') + '.';
     }
     saveState(); renderMessages(); document.getElementById('userInput').focus();
 }
