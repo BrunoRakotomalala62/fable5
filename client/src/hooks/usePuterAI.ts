@@ -27,6 +27,7 @@ export interface AIModel {
   provider: string;
   emoji: string;
   supportsVision: boolean;
+  supportsImageToImage?: boolean;
 }
 
 export const AVAILABLE_MODELS: AIModel[] = [
@@ -36,6 +37,7 @@ export const AVAILABLE_MODELS: AIModel[] = [
     provider: 'OpenAI',
     emoji: '🤖',
     supportsVision: true,
+    supportsImageToImage: true,
   },
   {
     id: 'claude-opus',
@@ -43,6 +45,7 @@ export const AVAILABLE_MODELS: AIModel[] = [
     provider: 'Anthropic',
     emoji: '🧠',
     supportsVision: true,
+    supportsImageToImage: false,
   },
   {
     id: 'gemini-2.0-flash',
@@ -50,6 +53,7 @@ export const AVAILABLE_MODELS: AIModel[] = [
     provider: 'Google',
     emoji: '✨',
     supportsVision: true,
+    supportsImageToImage: true,
   },
   {
     id: 'gpt-4-turbo',
@@ -57,6 +61,7 @@ export const AVAILABLE_MODELS: AIModel[] = [
     provider: 'OpenAI',
     emoji: '⚡',
     supportsVision: true,
+    supportsImageToImage: true,
   },
 ];
 

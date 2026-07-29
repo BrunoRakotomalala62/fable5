@@ -149,13 +149,17 @@ export default function ChatInterface({
             <button
               key={model.id}
               onClick={() => onModelChange(model.id)}
-              className={`px-3 py-1 rounded-full text-sm whitespace-nowrap transition-all ${
+              className={`px-3 py-1 rounded-full text-sm whitespace-nowrap transition-all relative ${
                 selectedModel === model.id
                   ? 'bg-accent text-accent-foreground'
                   : 'bg-secondary text-foreground hover:bg-secondary/80'
               }`}
+              title={model.supportsImageToImage ? 'Supporte image-to-image' : 'Vision uniquement'}
             >
               {model.emoji} {model.name}
+              {model.supportsImageToImage && (
+                <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border border-white" />
+              )}
             </button>
           ))}
         </div>
