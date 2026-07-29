@@ -1,9 +1,8 @@
 {
-  "name": "fable5-pro",
+  "name": "claude-fable-5-chat",
   "version": 2,
-  "buildCommand": "pnpm build",
-  "outputDirectory": "dist/public",
-  "framework": "vite",
+  "builds": [{ "src": "index.html", "use": "@vercel/static" }],
+  "routes": [{ "src": "/(.*)", "dest": "/index.html" }],
   "headers": [
     {
       "source": "/(.*)",
