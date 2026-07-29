@@ -327,8 +327,8 @@ const MODEL_INFO = {
     'openai/gpt-4o-mini': { name: 'GPT-4o Mini', provider: 'OpenAI', emoji: '🚀', vision: true },
     'openai/o4-mini': { name: 'o4-mini', provider: 'OpenAI', emoji: '🔮', vision: false },
     'openai/o3-mini': { name: 'o3-mini', provider: 'OpenAI', emoji: '🎯', vision: false },
-    'google/gemini-3.5-flash': { name: 'Gemini 3.5 Flash', provider: 'Google', emoji: '💎 , vision: true },
-    'google/gemini-2.5-pro': { name: 'Gemini 2.5 Pro', provider: 'Google', emoji: '🔬, vision: true },
+    'google/gemini-3.5-flash': { name: 'Gemini 3.5 Flash', provider: 'Google', emoji: '💎', vision: true },
+    'google/gemini-2.5-pro': { name: 'Gemini 2.5 Pro', provider: 'Google', emoji: '🔬', vision: true },
     'x-ai/grok-4.5': { name: 'Grok 4.5', provider: 'xAI', emoji: '🐦', vision: true },
     'x-ai/grok-4.1-fast': { name: 'Grok 4.1 Fast', provider: 'xAI', emoji: '⚡', vision: true },
     'microsoft/phi-4': { name: 'Phi-4', provider: 'Microsoft', emoji: '📐', vision: false },
@@ -339,7 +339,7 @@ const MODEL_INFO = {
 };
 
 function getModelInfo(modelId) {
-    return MODEL_INFO[modelId] || { name: modelId, provider: 'Unknown', emoji: '🤖, vision: false };
+    return MODEL_INFO[modelId] || { name: modelId, provider: 'Unknown', emoji: '🤖', vision: false };
 }
 
 const STATE_KEY = 'fable5-chat-state';
@@ -622,7 +622,7 @@ async function sendMessage() {
         if (!fullContent) conv.messages[aiMsgIdx].content = '_(Aucune réponse reçue)_';
     } catch (err) {
         removeTypingIndicator(); console.error('Erreur:', err);
-        conv.messages[aiMsgIdx].content = '� **Erreur**: ' + escapeHtml(err.message || 'Inconnue') + '.';
+        conv.messages[aiMsgIdx].content = '� **Erreur**: ' + escapeHtml(err.message || 'Inconnue') + '.';
     }
     saveState(); renderMessages(); document.getElementById('userInput').focus();
 }
