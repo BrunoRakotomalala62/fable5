@@ -319,35 +319,40 @@
 </main>
 
 <script>
-// FIXME: vision flag
+// ==============================================================
+// MODEL DEFINITIONS (vision = supports image/PDF analysis)
+// ==============================================================
 const MODEL_INFO = {
-    'claude-fable-5':              { name: 'Claude Fable 5',      provider: 'Anthropic',  emoji: '🧧, vision: true },
-    'anthropic/claude-opus-4-8':   { name: 'Claude Opus 4.8',     provider: 'Anthropic',  emoji: '🨠, vision: true },
-    'anthropic/claude-sonnet-5':   { name: 'Claude Sonnet 5',     provider: 'Anthropic',  emoji: '💅, vision: true },
-    'openai/gpt-5.5':              { name: 'GPT-5.5',             provider: 'OpenAI',     emoji: '⚁, vision: true },
-    'openai/gpt-4o-mini':          { name: 'GPT-4o Mini',         provider: 'OpenAI',     emoji: '🚀, vision: true },
-    'openai/o4-mini':              { name: 'o4-mini',             provider: 'OpenAI',     emoji: '🔮, vision: false },
-    'openai/o3-mini':              { name: 'o3-mini',             provider: 'OpenAI',     emoji: '🎯, vision: false },
-    'google/gemini-3.5-flash':     { name: 'Gemini 3.5 Flash',    provider: 'Google',     emoji: '💎, vision: true },
-    'google/gemini-2.5-pro':       { name: 'Gemini 2.5 Pro',      provider: 'Google',     emoji: '🔬, vision: true },
-    'x-ai/grok-4.5':               { name: 'Grok 4.5',            provider: 'xAI',        emoji: '🐦, vision: true },
-    'x-ai/grok-4.1-fast':          { name: 'Grok 4.1 Fast',       provider: 'xAI',        emoji: '⚡, vision: true },
-    'microsoft/phi-4':             { name: 'Phi-4',               provider: 'Microsoft',  emoji: '📐, vision: false },
-    'deepseek/deepseek-r1':        { name: 'DeepSeek R1',         provider: 'DeepSeek',   emoji: '🐋, vision: false },
-    'meta-llama/llama-4-maverick': { name: 'Llama 4 Maverick',    provider: 'Meta',       emoji: '🦙, vision: false },
-    'mistralai/mistral-large-2':   { name: 'Mistral Large 2',     provider: 'Mistral AI', emoji: '💨, vision: false },
-    'z-ai/glm-5.2':                { name: 'GLM 5.2',             provider: 'Z.AI',       emoji: '🏯, vision: false }
+    'claude-fable-5':              { name: 'Claude Fable 5',      provider: 'Anthropic',  emoji: '🧬', vision: true },
+    'anthropic/claude-opus-4-8':   { name: 'Claude Opus 4.8',     provider: 'Anthropic',  emoji: '�~��', vision: true },
+    'anthropic/claude-sonnet-5':   { name: 'Claude Sonnet 5',     provider: 'Anthropic',  emoji: '💡', vision: true },
+    'openai/gpt-5.5':              { name: 'GPT-5.5',             provider: 'OpenAI',     emoji: '⚡', vision: true },
+    'openai/gpt-4o-mini':          { name: 'GPT-4o Mini',         provider: 'OpenAI',     emoji: '🚀', vision: true },
+    'openai/o4-mini':              { name: 'o4-mini',             provider: 'OpenAI',     emoji: '🔮', vision: false },
+    'openai/o3-mini':              { name: 'o3-mini',             provider: 'OpenAI',     emoji: '🎯', vision: false },
+    'google/gemini-3.5-flash':     { name: 'Gemini 3.5 Flash',    provider: 'Google',     emoji: '💎', vision: true },
+    'google/gemini-2.5-pro':       { name: 'Gemini 2.5 Pro',      provider: 'Google',     emoji: '🔬', vision: true },
+    'x-ai/grok-4.5':               { name: 'Grok 4.5',            provider: 'xAI',        emoji: '🐦', vision: true },
+    'x-ai/grok-4.1-fast':          { name: 'Grok 4.1 Fast',       provider: 'xAI',        emoji: '⚡', vision: true },
+    'microsoft/phi-4':             { name: 'Phi-4',               provider: 'Microsoft',  emoji: '📐', vision: false },
+    'deepseek/deepseek-r1':        { name: 'DeepSeek R1',         provider: 'DeepSeek',   emoji: '🐋', vision: false },
+    'meta-llama/llama-4-maverick': { name: 'Llama 4 Maverick',    provider: 'Meta',       emoji: '🦙', vision: false },
+    'mistralai/mistral-large-2':   { name: 'Mistral Large 2',     provider: 'Mistral AI', emoji: '💨', vision: false },
+    'z-ai/glm-5.2':                { name: 'GLM 5.2',             provider: 'Z.AI',       emoji: '🏯', vision: false }
 };
 
 function getModelInfo(modelId) {
-    return MODEL_INFO[modelId] || { name: modelId, provider: 'Unknown', emoji: '🤖, vision: false };
+    return MODEL_INFO[modelId] || { name: modelId, provider: 'Unknown', emoji: '🤖', vision: false };
 }
 
+// ============================================================
+// STATE
+// ============================================================
 const STATE_KEY = 'fable5-chat-state';
 const DEFAULT_MODEL = 'claude-fable-5';
 let state = loadState();
 let currentStreaming = null;
-let attachments = [];
+let attachments = []; // { file: File, dataUrl: string, type: 'image'|'pdf' }
 
 function defaultState() {
     return {
@@ -380,9 +385,11 @@ function createConv() {
     saveState(); return conv;
 }
 
+// ============================================================
+// MODEL BAR (scrollable chips above input)
+// ============================================================
 function renderModelBar() {
     const bar = document.getElementById('modelBar');
-    if (!bar) return;
     const info = getModelInfo(state.selectedModel);
     let html = '<span class="model-bar-label">Modèle :</span>';
     for (const [id, m] of Object.entries(MODEL_INFO)) {
@@ -391,6 +398,7 @@ function renderModelBar() {
         html += `<button class="model-chip${sel}" onclick="selectModel('${id}')" title="${m.vision ? '✅ Analyse image/PDF' : '❌ Texte uniquement'}">${vDot}${m.emoji} ${m.name}</button>`;
     }
     bar.innerHTML = html;
+    // Scroll selected chip into view
     setTimeout(() => {
         const sel = bar.querySelector('.model-chip.selected');
         if (sel) sel.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
@@ -403,9 +411,10 @@ function selectModel(id) {
     saveState();
     updateModelUI();
     renderModelBar();
+    // If current model doesn't support vision and we have attachments, warn
     const info = getModelInfo(id);
     if (!info.vision && attachments.length > 0) {
-        alert(info.name + ' ne supporte pas l\'analyse d\'images/PDF. Les pieces jointes seront ignorées.');
+        alert(info.name + ' ne supporte pas l\'analyse d\'images/PDF. Les pièces jointes seront ignorées.');
     }
     document.getElementById('userInput').focus();
 }
@@ -418,20 +427,32 @@ function updateModelUI() {
     if (textarea) textarea.placeholder = 'Posez votre question à ' + info.name + '...';
 }
 
+// ============================================================
+// FILE ATTACHMENTS
+// ============================================================
 function handleFileSelect(event) {
     const files = Array.from(event.target.files);
     if (files.length === 0) return;
+    
     const info = getModelInfo(state.selectedModel);
     if (!info.vision) {
-        alert(info.name + ' ne supporte pas l'analyse d'images/PDF. Passez à un modèle avec vision (💎).');
-        event.target.value = ''; return;
+        alert(info.name + ' ne supporte pas l\'analyse d\'images/PDF. Passez à un modèle avec vision (💚).');
+        event.target.value = '';
+        return;
     }
+
+    // Limit total attachments
     if (attachments.length + files.length > 5) {
-        alert('Maximum 5 pieces jointes à la fois.');
-        event.target.value = ''; return;
+        alert('Maximum 5 pièces jointes à la fois.');
+        event.target.value = '';
+        return;
     }
+
     files.forEach(file => {
-        if (file.size > 20 * 1024 * 1024) { alert(file.name + ' dépasse la limite de 20 Mo.'); return; }
+        if (file.size > 20 * 1024 * 1024) {
+            alert(file.name + ' dépasse la limite de 20 Mo.');
+            return;
+        }
         const type = file.type.startsWith('image/') ? 'image' : 'pdf';
         if (type === 'image') {
             const reader = new FileReader();
@@ -441,6 +462,7 @@ function handleFileSelect(event) {
             };
             reader.readAsDataURL(file);
         } else {
+            // PDF: store file reference, dataUrl will be null
             attachments.push({ file, dataUrl: null, type: 'pdf' });
             renderAttachments();
         }
@@ -455,7 +477,10 @@ function removeAttachment(idx) {
 
 function renderAttachments() {
     const container = document.getElementById('attachmentPreviews');
-    if (attachments.length === 0) { container.innerHTML = ''; return; }
+    if (attachments.length === 0) {
+        container.innerHTML = '';
+        return;
+    }
     container.innerHTML = attachments.map((att, idx) => {
         if (att.type === 'image' && att.dataUrl) {
             return `<div class="attachment-preview"><img src="${att.dataUrl}" alt="img"><button class="remove-attach" onclick="removeAttachment(${idx})">✕</button></div>`;
@@ -465,6 +490,9 @@ function renderAttachments() {
     }).join('');
 }
 
+// ============================================================
+// UI
+// ============================================================
 function renderSidebar() {
     const list = document.getElementById('conversationList');
     if (state.convOrder.length === 0) {
@@ -513,16 +541,17 @@ function renderMessages() {
 
 function renderMsgAttachments(attachments) {
     return '<div class="msg-attachments">' + attachments.map(a => {
-        if (a.type === 'image') return `<img class="msg-attachment-img" src="${a.dataUrl}" onclick="window.open('${a.dataUrl}')" title="${a.name}"> `;
-        return `<div class="msg-attachment-pdf">🔌 ${a.name}</div>`;
+        if (a.type === 'image') return `<img class="msg-attachment-img" src="${a.dataUrl}" onclick="window.open('${a.dataUrl}')" title="${a.name}">`;
+        return `<div class="msg-attachment-pdf">📄 ${a.name}</div>`;
     }).join('') + '</div>';
 }
 
 function renderMarkdown(text) {
     if (!text) return '';
-    const mathBlocks = [], PH = '\u29FC', PE = '\u29FD';
+    const mathBlocks = [];
+    const PH = '\u29FC', PE = '\u29FD';
     text = text.replace(/\\\[([\s\S]*?)\\\]/g, (m,f) => { const i=mathBlocks.length; mathBlocks.push({type:'display',formula:f.trim()}); return PH+i+PE; });
-    text = text.replace(/\\\([^\n]+?)\\\)/g, (m,f) => { const i=mathBlocks.length; mathBlocks.push({type:'inline',formula:f.trim()}); return PH+i+PE; });
+    text = text.replace(/\\\(([^\n]+?)\\\)/g, (m,f) => { const i=mathBlocks.length; mathBlocks.push({type:'inline',formula:f.trim()}); return PH+i+PE; });
     text = text.replace(/\$\$([\s\S]*?)\$\$/g, (m,f) => { const i=mathBlocks.length; mathBlocks.push({type:'display',formula:f.trim()}); return PH+i+PE; });
     text = text.replace(/\$([^\$\n]+?)\$/g, (m,f) => { const i=mathBlocks.length; mathBlocks.push({type:'inline',formula:f.trim()}); return PH+i+PE; });
     let html;
@@ -556,6 +585,9 @@ function addTypingIndicator() {
 }
 function removeTypingIndicator() { const el=document.getElementById('typingIndicator'); if(el) el.remove(); }
 
+// ============================================================
+// ACTIONS
+// ============================================================
 function newChat() {
     createConv(); renderSidebar(); renderMessages(); renderModelBar();
     document.getElementById('userInput').value=''; document.getElementById('userInput').style.height='auto';
@@ -570,7 +602,7 @@ function deleteConv(id) {
     delete state.conversations[id]; state.convOrder=state.convOrder.filter(cid=>cid!==id);
     if (state.activeConvId===id) state.activeConvId=state.convOrder.length>0?state.convOrder[0]:null;
     saveState(); renderSidebar(); renderMessages();
-    if (!state.activeConvId) { const w=document.getElementById('welcomeScreen'); if(w) w.style.display=''flex''; }
+    if (!state.activeConvId) { const v=document.getElementById('welcomeScreen'); if(w) w.style.display='flex'; }
 }
 
 async function sendMessage() {
@@ -582,7 +614,10 @@ async function sendMessage() {
 
     let conv = getActiveConv(); if (!conv) conv = createConv();
 
+    // Build attachments snapshot
     const msgAttachments = attachments.map(a => ({ type: a.type, dataUrl: a.dataUrl || null, name: a.file.name }));
+
+    // Add user message
     conv.messages.push({ role: 'user', content: content || '(Pièce jointe)', attachments: msgAttachments });
     if (conv.messages.length === 1) conv.title = (content || 'Image/PDF').slice(0, 50) + ((content || '').length > 50 ? '...' : '');
 
@@ -592,29 +627,38 @@ async function sendMessage() {
     attachments = []; renderAttachments();
     saveState(); renderSidebar(); renderMessages();
 
+    // Add AI placeholder
     const aiMsgIdx = conv.messages.length;
     conv.messages.push({ role: 'ai', content: '' });
     saveState(); renderMessages(); addTypingIndicator();
 
+    // Build prompt
     const messages = conv.messages.filter(m => m.role !== 'ai' || m.content !== '')
         .map(m => `${m.role === 'user' ? 'User' : 'Assistant'}: ${m.content}`).join('\n\n');
     const fullPrompt = messages + '\n\nAssistant: ';
 
     try {
+        // If we have image attachments, pass first image URL to puter.ai.chat
         const imageAtt = msgAttachments.filter(a => a.type === 'image' && a.dataUrl);
         let response;
         if (imageAtt.length > 0) {
-            response = await puter.ai.chat(fullPrompt, imageAtt[0].dataUrl, { model: state.selectedModel, stream: true });
+            const imageUrl = imageAtt[0].dataUrl;
+            response = await puter.ai.chat(fullPrompt, imageUrl, { model: state.selectedModel, stream: true });
         } else if (msgAttachments.length > 0) {
+            // PDF or other — try via Puter filesystem
             const file = msgAttachments[0];
+            // For PDFs without dataUrl, send text-only with a note
             const note = file.type === 'pdf' ? '\n\n[Un PDF nommé "' + file.name + '" est joint — si le modèle le supporte, il sera analysé.]' : '';
             response = await puter.ai.chat(fullPrompt + note, { model: state.selectedModel, stream: true });
         } else {
             response = await puter.ai.chat(fullPrompt, { model: state.selectedModel, stream: true });
         }
+
         removeTypingIndicator();
         let fullContent = '';
-        for await (const part of response) { if (part?.text) { fullContent += part.text; conv.messages[aiMsgIdx].content = fullContent; saveState(); updateAiMessage(aiMsgIdx, fullContent); scrollToBottom(); } }
+        for await (const part of response) {
+            if (part?.text) { fullContent += part.text; conv.messages[aiMsgIdx].content = fullContent; saveState(); updateAiMessage(aiMsgIdx, fullContent); scrollToBottom(); }
+        }
         if (!fullContent) conv.messages[aiMsgIdx].content = '_(Aucune réponse reçue)_';
     } catch (err) {
         removeTypingIndicator(); console.error('Erreur Puter.js:', err);
@@ -651,7 +695,7 @@ function exportChat() {
     const conv=getActiveConv(); if (!conv||conv.messages.length===0) { alert('Aucune conversation à exporter.'); return; }
     const info=getModelInfo(state.selectedModel);
     let text=`# ${conv.title}\n\nDate: ${new Date(conv.createdAt).toLocaleString()}\nModèle: ${info.name} (${info.provider})\n\n---\n\n`;
-    conv.messages.forEach(msg=>{ text+=`## ${msg.role==='user'?'👤 Vous':info.emoji+' '+info.name}\n\n${msg.content}\n\n`; });
+    conv.messages.forEach(msg=>{ text+=` ## ${msg.role==='user'?'👤 Vous':info.emoji+' '+info.name}\n\n${msg.content}\n\n`; });
     const blob=new Blob([text],{type:'text/markdown'}); const url=URL.createObjectURL(blob);
     const a=document.createElement('a'); a.href=url; a.download=`fable5-chat-${conv.id}.md`; a.click(); URL.revokeObjectURL(url);
 }
@@ -659,12 +703,14 @@ function toggleSidebar() { document.getElementById('sidebar').classList.toggle('
 function closeSidebar() { document.getElementById('sidebar').classList.remove('open'); document.getElementById('sidebarOverlay').classList.remove('open'); }
 document.getElementById('sidebarOverlay').addEventListener('click', closeSidebar);
 
+// === SIGN OUT ===
 function signOutPuter() {
     if (!confirm('Déconnexion : cela effacera vos conversations et vous permettra de vous connecter avec un autre compte Puter. Continuer ?')) return;
     try { puter.auth.signOut(); } catch(e) { console.log('Puter signOut:', e); }
     localStorage.clear(); location.reload();
 }
 
+// === INIT ===
 function init() {
     updateModelUI();
     renderModelBar();
@@ -672,6 +718,7 @@ function init() {
     if (state.activeConvId && state.conversations[state.activeConvId]) renderMessages();
     else if (state.convOrder.length > 0) { state.activeConvId = state.convOrder[0]; saveState(); renderMessages(); }
     document.getElementById('userInput').focus();
+    // Update send button state
     autoResize();
 }
 init();
