@@ -930,8 +930,7 @@ async function sendMessage() {
 
     // Build prompt from conversation history
     const messages = conv.messages
-        .filter(m => m.role !== 'ai' || m.content !== '') // skip empty ai
-        .slice(0, -1) // exclude the placeholder we just added
+        .filter(m => m.role !== 'ai' || m.content !== '') // skip empty ai placeholder
         .map(m => `${m.role === 'user' ? 'User' : 'Assistant'}: ${m.content}`)
         .join('\n\n');
 
