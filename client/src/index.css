@@ -1,0 +1,205 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+:root {
+  /* Fable5 Pro - Premium AI Studio Theme */
+  --primary: #b8860b;
+  --primary-foreground: #0a0a0f;
+  --sidebar-primary: #a0740a;
+  --sidebar-primary-foreground: #f2f2f7;
+  --chart-1: #b8860b;
+  --chart-2: #9966cc;
+  --chart-3: #8c5fbf;
+  --chart-4: #8050b2;
+  --chart-5: #7445a5;
+  --radius: 0.65rem;
+  
+  /* Dark mode base */
+  --background: #0a0a0f;
+  --foreground: #f2f2f7;
+  --card: #1a1a25;
+  --card-foreground: #f2f2f7;
+  --popover: #1a1a25;
+  --popover-foreground: #f2f2f7;
+  --secondary: #252535;
+  --secondary-foreground: #d9d9e3;
+  --muted: #404050;
+  --muted-foreground: #a6a6b6;
+  --accent: #b8860b;
+  --accent-foreground: #0a0a0f;
+  --destructive: #f87171;
+  --destructive-foreground: #f2f2f7;
+  --border: #333340;
+  --input: #252535;
+  --ring: #b8860b;
+  --sidebar: #0f0f15;
+  --sidebar-foreground: #f2f2f7;
+  --sidebar-accent: #b8860b;
+  --sidebar-accent-foreground: #0a0a0f;
+  --sidebar-border: #2e2e3a;
+  --sidebar-ring: #b8860b;
+}
+
+.dark {
+  --primary: #b8860b;
+  --primary-foreground: #0a0a0f;
+  --sidebar-primary: #a0740a;
+  --sidebar-primary-foreground: #f2f2f7;
+  --background: #0a0a0f;
+  --foreground: #f2f2f7;
+  --card: #1a1a25;
+  --card-foreground: #f2f2f7;
+  --popover: #1a1a25;
+  --popover-foreground: #f2f2f7;
+  --secondary: #252535;
+  --secondary-foreground: #d9d9e3;
+  --muted: #404050;
+  --muted-foreground: #a6a6b6;
+  --accent: #b8860b;
+  --accent-foreground: #0a0a0f;
+  --destructive: #f87171;
+  --destructive-foreground: #f2f2f7;
+  --border: #333340;
+  --input: #252535;
+  --ring: #b8860b;
+  --chart-1: #b8860b;
+  --chart-2: #9966cc;
+  --chart-3: #8c5fbf;
+  --chart-4: #8050b2;
+  --chart-5: #7445a5;
+  --sidebar: #0f0f15;
+  --sidebar-foreground: #f2f2f7;
+  --sidebar-accent: #b8860b;
+  --sidebar-accent-foreground: #0a0a0f;
+  --sidebar-border: #2e2e3a;
+  --sidebar-ring: #b8860b;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  button:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]),
+  [type="button"]:not(:disabled),
+  [type="submit"]:not(:disabled),
+  [type="reset"]:not(:disabled),
+  a[href],
+  select:not(:disabled),
+  input[type="checkbox"]:not(:disabled),
+  input[type="radio"]:not(:disabled) {
+    @apply cursor-pointer;
+  }
+}
+
+@layer components {
+  .container {
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .flex {
+    min-height: 0;
+    min-width: 0;
+  }
+
+  /* Fable5 Pro Custom Components */
+  
+  .gradient-accent {
+    @apply bg-gradient-to-r from-accent via-purple-500 to-accent;
+  }
+
+  .glow-accent {
+    @apply shadow-lg shadow-accent/20;
+  }
+
+  .message-bubble-user {
+    @apply bg-secondary text-foreground rounded-lg p-3 max-w-xs lg:max-w-md;
+  }
+
+  .message-bubble-ai {
+    @apply bg-card text-foreground rounded-lg p-3 max-w-xs lg:max-w-md border border-accent/20;
+  }
+
+  .floating-action-btn {
+    @apply rounded-full w-12 h-12 flex items-center justify-center bg-accent text-accent-foreground shadow-lg transition-all duration-200 hover:shadow-xl hover:shadow-accent/40 active:scale-95;
+  }
+
+  .smooth-transition {
+    @apply transition-all duration-200;
+    animation-timing-function: cubic-bezier(0.23, 1, 0.32, 1);
+  }
+
+  @media (min-width: 640px) {
+    .container {
+      padding-left: 1.5rem;
+      padding-right: 1.5rem;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .container {
+      padding-left: 2rem;
+      padding-right: 2rem;
+      max-width: 1280px;
+    }
+  }
+}
+
+/* Smooth ease-out for UI animations */
+@layer utilities {
+  .ease-out-smooth {
+    --tw-ease: cubic-bezier(0.23, 1, 0.32, 1);
+  }
+
+  .ease-in-out-smooth {
+    --tw-ease: cubic-bezier(0.77, 0, 0.175, 1);
+  }
+}
