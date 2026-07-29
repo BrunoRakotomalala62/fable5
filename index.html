@@ -178,6 +178,17 @@
             margin-right: 4px;
             vertical-align: middle;
         }
+        .model-chip .image-to-image-dot {
+            display: inline-block;
+            width: 6px; height: 6px;
+            background: #ff4444;
+            border-radius: 50%;
+            margin-left: 2px;
+            margin-right: 2px;
+            vertical-align: middle;
+            border: 1px solid #fff;
+            box-shadow: 0 0 4px rgba(255, 68, 68, 0.6);
+        }
 
         /* === INPUT === */
         .input-area { padding: 10px 16px 16px; border-top: 1px solid var(--border); background: var(--bg-secondary); }
@@ -320,22 +331,22 @@
 
 <script>
 const MODEL_INFO = {
-    'claude-fable-5': { name: 'Claude Fable 5', provider: 'Anthropic', emoji: '🧬', vision: true },
-    'anthropic/claude-opus-4-8': { name: 'Claude Opus 4.8', provider: 'Anthropic', emoji: '🧠', vision: true },
-    'anthropic/claude-sonnet-5': { name: 'Claude Sonnet 5', provider: 'Anthropic', emoji: '💡', vision: true },
-    'openai/gpt-5.5': { name: 'GPT-5.5', provider: 'OpenAI', emoji: '⚁', vision: true },
-    'openai/gpt-4o-mini': { name: 'GPT-4o Mini', provider: 'OpenAI', emoji: '🚀', vision: true },
-    'openai/o4-mini': { name: 'o4-mini', provider: 'OpenAI', emoji: '🔮', vision: false },
-    'openai/o3-mini': { name: 'o3-mini', provider: 'OpenAI', emoji: '🎯', vision: false },
-    'google/gemini-3.5-flash': { name: 'Gemini 3.5 Flash', provider: 'Google', emoji: '💎', vision: true },
-    'google/gemini-2.5-pro': { name: 'Gemini 2.5 Pro', provider: 'Google', emoji: '🔬', vision: true },
-    'x-ai/grok-4.5': { name: 'Grok 4.5', provider: 'xAI', emoji: '🐦', vision: true },
-    'x-ai/grok-4.1-fast': { name: 'Grok 4.1 Fast', provider: 'xAI', emoji: '⚡', vision: true },
-    'microsoft/phi-4': { name: 'Phi-4', provider: 'Microsoft', emoji: '📐', vision: false },
-    'deepseek/deepseek-r1': { name: 'DeepSeek R1', provider: 'DeepSeek', emoji: '🐋', vision: false },
-    'meta-llama/llama-4-maverick': { name: 'Llama 4 Maverick', provider: 'Meta', emoji: '🦙', vision: false },
-    'mistralai/mistral-large-2': { name: 'Mistral Large 2', provider: 'Mistral AI', emoji: '💨', vision: false },
-    'z-ai/glm-5.2': { name: 'GLM 5.2',  provider: 'Z.AI',     emoji: '🏯', vision: false }
+    'claude-fable-5': { name: 'Claude Fable 5', provider: 'Anthropic', emoji: '🧬', vision: true, imageToImage: false },
+    'anthropic/claude-opus-4-8': { name: 'Claude Opus 4.8', provider: 'Anthropic', emoji: '🧠', vision: true, imageToImage: false },
+    'anthropic/claude-sonnet-5': { name: 'Claude Sonnet 5', provider: 'Anthropic', emoji: '💡', vision: true, imageToImage: false },
+    'openai/gpt-5.5': { name: 'GPT-5.5', provider: 'OpenAI', emoji: '⚁', vision: true, imageToImage: true },
+    'openai/gpt-4o-mini': { name: 'GPT-4o Mini', provider: 'OpenAI', emoji: '🚀', vision: true, imageToImage: true },
+    'openai/o4-mini': { name: 'o4-mini', provider: 'OpenAI', emoji: '🔮', vision: false, imageToImage: false },
+    'openai/o3-mini': { name: 'o3-mini', provider: 'OpenAI', emoji: '🎯', vision: false, imageToImage: false },
+    'google/gemini-3.5-flash': { name: 'Gemini 3.5 Flash', provider: 'Google', emoji: '💎', vision: true, imageToImage: true },
+    'google/gemini-2.5-pro': { name: 'Gemini 2.5 Pro', provider: 'Google', emoji: '🔬', vision: true, imageToImage: true },
+    'x-ai/grok-4.5': { name: 'Grok 4.5', provider: 'xAI', emoji: '🐦', vision: true, imageToImage: true },
+    'x-ai/grok-4.1-fast': { name: 'Grok 4.1 Fast', provider: 'xAI', emoji: '⚡', vision: true, imageToImage: true },
+    'microsoft/phi-4': { name: 'Phi-4', provider: 'Microsoft', emoji: '📐', vision: false, imageToImage: false },
+    'deepseek/deepseek-r1': { name: 'DeepSeek R1', provider: 'DeepSeek', emoji: '🐋', vision: false, imageToImage: false },
+    'meta-llama/llama-4-maverick': { name: 'Llama 4 Maverick', provider: 'Meta', emoji: '🦙', vision: false, imageToImage: false },
+    'mistralai/mistral-large-2': { name: 'Mistral Large 2', provider: 'Mistral AI', emoji: '💨', vision: false, imageToImage: false },
+    'z-ai/glm-5.2': { name: 'GLM 5.2',  provider: 'Z.AI',     emoji: '🏯', vision: false, imageToImage: false }
 };
 
 function getModelInfo(modelId) {
@@ -381,7 +392,10 @@ function renderModelBar() {
     for (const [id, m] of Object.entries(MODEL_INFO)) {
         const sel = id === state.selectedModel ? ' selected' : '';
         const vDot = m.vision ? '<span class="vision-dot" title="Compatible vision"></span>' : '';
-        html += `<button class="model-chip${sel}" onclick="selectModel('${id}')" title="${m.vision ? '✅ Analyse image/PDF' : '❌ Texte uniquement'}">${vDot}${m.emoji} ${m.name}</button>`;
+        const i2iDot = m.imageToImage ? '<span class="image-to-image-dot" title="Compatible image-to-image"></span>' : '';
+        const tooltip = m.vision ? '✅ Analyse image/PDF' : '❌ Texte uniquement';
+        const i2iTooltip = m.imageToImage ? ' + 🎨 Image-to-Image' : '';
+        html += `<button class="model-chip${sel}" onclick="selectModel('${id}')" title="${tooltip}${i2iTooltip}" style="position:relative;">${vDot}${i2iDot}${m.emoji} ${m.name}</button>`;
     }
     bar.innerHTML = html;
     setTimeout(() => {
