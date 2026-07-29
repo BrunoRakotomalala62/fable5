@@ -2,7 +2,11 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#0a0a0f">
     <title>Claude Fable 5 — Chat IA</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧠</text></svg>">
     <script src="https://js.puter.com/v2/"></script>
@@ -329,6 +333,8 @@
             font-size: 15px;
             line-height: 1.7;
             color: var(--text-primary);
+            overflow-wrap: anywhere;
+            word-break: break-word;
         }
         .msg-text p { margin-bottom: 12px; }
         .msg-text p:last-child { margin-bottom: 0; }
@@ -526,9 +532,19 @@
             .sidebar.open { transform: translateX(0); }
             .sidebar-overlay.open { display: block; }
             .menu-toggle { display: block; }
-            .chat-container { padding: 16px; }
-            .input-area { padding: 12px 16px 16px; }
+            .chat-container { padding: 12px; overflow-x: hidden; }
+            .input-area { padding: 10px 12px 12px; }
             .welcome h1 { font-size: 22px; }
+            .message { padding: 12px 14px; gap: 10px; }
+            .msg-text { font-size: 14px; }
+            .msg-avatar { width: 28px; height: 28px; font-size: 14px; }
+            .input-wrapper { padding: 6px 6px 6px 14px; }
+            .input-wrapper textarea { font-size: 14px; }
+            .main-header { padding: 12px 16px; }
+            .header-btn { padding: 6px 10px; font-size: 12px; }
+            .send-btn { width: 36px; height: 36px; font-size: 16px; }
+            .katex { font-size: 0.95em; }
+            .katex-display > .katex { font-size: 1.05em; }
         }
 
         /* === SCROLLBAR === */
@@ -550,8 +566,8 @@
 
         /* === KATEX DARK MODE === */
         .katex { color: var(--text-primary); font-size: 1.05em; }
-        .katex-display { overflow-x: auto; overflow-y: hidden; padding: 4px 0; }
-        .katex-display > .katex { font-size: 1.15em; }
+        .katex-display { overflow-x: auto; overflow-y: hidden; padding: 4px 0; -webkit-overflow-scrolling: touch; }
+        .katex-display > .katex { font-size: 1.15em; max-width: 100%; }
         .katex .mathnormal { color: var(--text-primary); }
         .katex .mord { color: var(--text-primary); }
         .katex .mbin { color: #c084fc; }
@@ -764,15 +780,29 @@ function renderMarkdown(text) {
     const PH = '\u29FC'; // ⧼ — unique placeholder marker
     const PE = '\u29FD'; // ⧽
 
-    // Protect display math: $$ ... $$
+    // 1. Protect \[ ... \] display math (LaTeX style)
+    text = text.replace(/\\\[([\s\S]*?)\\\]/g, (match, formula) => {
+        const idx = mathBlocks.length;
+        mathBlocks.push({ type: 'display', formula: formula.trim() });
+        return PH + idx + PE;
+    });
+
+    // 2. Protect \( ... \) inline math (LaTeX style)
+    text = text.replace(/\\\(([^\n]+?)\\\)/g, (match, formula) => {
+        const idx = mathBlocks.length;
+        mathBlocks.push({ type: 'inline', formula: formula.trim() });
+        return PH + idx + PE;
+    });
+
+    // 3. Protect $$ ... $$ display math
     text = text.replace(/\$\$([\s\S]*?)\$\$/g, (match, formula) => {
         const idx = mathBlocks.length;
         mathBlocks.push({ type: 'display', formula: formula.trim() });
         return PH + idx + PE;
     });
 
-    // Protect inline math: $ ... $ (single $, not followed/preceded by $)
-    text = text.replace(/(?<!\$)\$(?!\$)([^\$\n]+?)(?<!\$)\$(?!\$)/g, (match, formula) => {
+    // 4. Protect $ ... $ inline math ($$ already removed, browser-safe regex)
+    text = text.replace(/\$([^\$\n]+?)\$/g, (match, formula) => {
         const idx = mathBlocks.length;
         mathBlocks.push({ type: 'inline', formula: formula.trim() });
         return PH + idx + PE;
